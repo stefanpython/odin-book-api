@@ -47,12 +47,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // Define passport login strategy
 passport.use(
   "login",
-  new LocalStrategy(async (username, password, done) => {
+  {
+    usernameFiled: "email",
+    passwordFiled: "password",
+  },
+  new LocalStrategy(async (email, password, done) => {
     try {
-      // Verify username and password
-      const user = await User.findOne({ username });
+      // Verify email and password
+      const user = await User.findOne({ email });
       if (!user) {
-        return done(null, false, { message: "Invalid username" });
+        return done(null, false, { message: "Invalid email" });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
