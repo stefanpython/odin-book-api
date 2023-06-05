@@ -8,6 +8,7 @@ var logger = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const User = require("./models/user");
 
 // Passport Imports
 const passport = require("passport");
@@ -42,6 +43,50 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// Define passport login strategy
+passport.use(
+  "login",
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      // Verify username and password
+      const user = await User.findOne({ username });
+      if (!user) {
+        return done(null, false, { message: "Invalid username" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return done(null, false, { message: "Incorrect password" });
+      }
+      return done(null, user);
+    } catch (err) {
+      return done(err);
+    }
+  })
+);
+
+// Verify token - passport
+passport.use(
+  new JWTstrategy(
+    {
+      secretOrKey: "acum",
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    },
+    async (token, done) => {
+      try {
+        const user = await User.findById(token.userId);
+
+        if (!user) {
+          return done(null, false);
+        }
+        return done(null, user);
+      } catch (err) {
+        return done(err);
+      }
+    }
+  )
+);
 
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
