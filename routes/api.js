@@ -36,8 +36,15 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   post_controller.post_create
 );
-router.get("/posts");
-router.put("/posts/:postId");
+
+router.get("/posts", post_controller.post_list);
+
+router.put(
+  "/posts/:postId",
+  passport.authenticate("jwt", { session: false }),
+  post_controller.post_update
+);
+
 router.delete("/posts/:postId");
 
 module.exports = router;

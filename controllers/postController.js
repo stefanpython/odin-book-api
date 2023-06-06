@@ -45,3 +45,50 @@ exports.post_create = [
     }
   },
 ];
+
+// Get all posts
+exports.post_list = async (req, res) => {
+  try {
+    const posts = await Post.find({});
+
+    res.json({ message: "Success", posts });
+  } catch (err) {
+    res.status(500).json({ message: "Error retrieving posts" });
+  }
+};
+
+// Update post
+exports.post_update = [
+  body("content").trim().notEmpty().withMessage("Content is required"),
+
+  async (req, res) => {
+    try {
+      // Check for validation error
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      // Retrieve post id from params
+      const postId = req.params.postId;
+
+      // Find the post by id
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+
+      const postAuthor = await User.findById(req.user._id);
+
+      // Update the post with the new data
+      post.content = req.body.content;
+
+      // Save the updated post to the database
+      const updatedPost = await post.save();
+      res.json({ message: "Post updated successfully" });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Error in updating post" });
+    }
+  },
+];
