@@ -8,5 +8,6 @@ router.get("/", (req, res, next) => {
 
 // User routes
 router.post("/sign-up", user_controller.signup);
+router.post("/login", user_controller.login);
 
 module.exports = router;

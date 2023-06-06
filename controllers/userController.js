@@ -29,3 +29,30 @@ exports.signup = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// LogIn
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the user in the database
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Compare provided password with the hashed password
+    const isPassword = await bcrypt.compare(password, user.password);
+    if (!isPassword) {
+      return res.status(401).json({ message: "Invaild email or password" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, "acum", {
+      expiresIn: "1day",
+    });
+    res.json({ message: "Login successful", token });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
