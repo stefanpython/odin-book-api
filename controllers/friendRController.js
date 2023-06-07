@@ -33,10 +33,15 @@ exports.send_request = async (req, res) => {
       return res.status(400).json({ message: "Friend request already sent" });
     }
 
+    const senderName = await User.findById(senderId);
+    const recipientName = await User.findById(recipientId);
+
     // Create and save a new request
     const newRequest = new FriendRequest({
       sender: senderId,
       recipient: recipientId,
+      senderName: senderName.fullName,
+      recipientName: recipient.fullName,
     });
 
     // Add request to the recipient`s friendRequests array

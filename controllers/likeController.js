@@ -42,8 +42,13 @@ exports.like_post = async (req, res, next) => {
 
       res.status(200).json({ message: "Post unliked successfully" });
     } else {
+      const user = await User.findById(userId);
       // User has not liked the post, so create a new like
-      const newLike = new Like({ user: userId, post: postId });
+      const newLike = new Like({
+        user: userId,
+        post: postId,
+        authorName: user.fullName,
+      });
       await newLike.save();
 
       // Add like to user's likes array

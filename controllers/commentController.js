@@ -24,11 +24,14 @@ exports.comment_create = [
         return res.status(400).json({ message: "Post not existent" });
       }
 
+      const user = await User.findById(userId);
+
       // Create and save new comment
       const newComment = new Comment({
         content: content,
         post: postId,
         user: userId,
+        authorName: user.fullName,
       });
 
       await newComment.save();

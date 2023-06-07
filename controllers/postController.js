@@ -50,10 +50,23 @@ exports.post_create = [
 // GET/Display all posts
 exports.post_list = async (req, res) => {
   try {
-    const posts = await Post.find({});
+    const posts = await Post.find()
+      .populate("content")
+      .populate("authorName")
+      .populate("comments")
+      .populate("likes")
+      .populate("likeCount")
+      .exec();
+
+    const newPost = posts.forEach((item) => {
+      item.comments.forEach((comm) => {
+        console.log(comm.content);
+      });
+    });
 
     res.json({ message: "Success", posts });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Error retrieving posts" });
   }
 };
