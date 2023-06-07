@@ -92,8 +92,7 @@ passport.use(
   )
 );
 
-app.use("/", indexRouter);
-app.use("/api", apiRouter);
+app.use("/", apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

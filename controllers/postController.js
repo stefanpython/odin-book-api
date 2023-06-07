@@ -58,12 +58,6 @@ exports.post_list = async (req, res) => {
       .populate("likeCount")
       .exec();
 
-    const newPost = posts.forEach((item) => {
-      item.comments.forEach((comm) => {
-        console.log(comm.content);
-      });
-    });
-
     res.json({ message: "Success", posts });
   } catch (err) {
     console.log(err);

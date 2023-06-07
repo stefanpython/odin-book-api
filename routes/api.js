@@ -6,6 +6,11 @@ const friendRequest_controller = require("../controllers/friendRController");
 const post_controller = require("../controllers/postController");
 const like_controller = require("../controllers/likeController");
 const comment_controller = require("../controllers/commentController");
+const profile_controller = require("../controllers/profileController");
+const User = require("../models/user");
+const Post = require("../models/post");
+const Like = require("../models/like");
+const Comment = require("../models/comment");
 
 router.get("/", (req, res, next) => {
   res.json("TODO: -- ROUTE API HERE");
@@ -59,5 +64,8 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   comment_controller.comment_create
 );
+
+// PROFILE ROUTE
+router.get("/profile/:userId", profile_controller.user_profile);
 
 module.exports = router;
