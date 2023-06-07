@@ -1,9 +1,9 @@
 const { body, validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 const User = require("../models/user");
 const Post = require("../models/post");
 const Like = require("../models/like");
 const Comment = require("../models/comment");
-const mongoose = require("mongoose");
 
 // Create post
 exports.post_create = [
@@ -47,7 +47,7 @@ exports.post_create = [
   },
 ];
 
-// Get all posts
+// GET/Display all posts
 exports.post_list = async (req, res) => {
   try {
     const posts = await Post.find({});
