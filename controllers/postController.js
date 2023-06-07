@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Post = require("../models/post");
 const Like = require("../models/like");
 const Comment = require("../models/comment");
+const mongoose = require("mongoose");
 
 // Create post
 exports.post_create = [
@@ -92,3 +93,37 @@ exports.post_update = [
     }
   },
 ];
+
+// Delete post
+exports.post_delete = async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+
+    // Check if ID is valid
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ message: "Post id is invalid" });
+    }
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const author = await User.findById(post.userId);
+
+    if (!author) {
+      return res.status(404).json({ message: "Author not found" });
+    }
+
+    // Remove post ID from user`s posts array
+    author.posts.pull(postId);
+    await author.save();
+
+    await Post.findByIdAndRemove(postId);
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
