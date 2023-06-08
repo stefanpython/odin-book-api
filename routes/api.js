@@ -13,7 +13,7 @@ const Like = require("../models/like");
 const Comment = require("../models/comment");
 
 router.get("/", (req, res, next) => {
-  res.json("TODO: -- ROUTE API HERE");
+  res.redirect("/posts");
 });
 
 // USER ROUTES
@@ -38,7 +38,12 @@ router.get(
 );
 
 // POST ROUTES
-router.get("/posts", post_controller.post_list);
+router.get(
+  "/posts",
+  passport.authenticate("jwt", { session: false }),
+  post_controller.post_list
+);
+
 router.post(
   "/posts",
   passport.authenticate("jwt", { session: false }),

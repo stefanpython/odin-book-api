@@ -50,12 +50,29 @@ exports.post_create = [
 // GET/Display all posts
 exports.post_list = async (req, res) => {
   try {
-    const posts = await Post.find()
-      .populate("content")
-      .populate("authorName")
+    // const posts = await Post.find()
+    //   .populate("content")
+    //   .populate("authorName")
+    //   .populate("comments")
+    //   .populate("likes")
+    //   .populate("likeCount")
+    //   .exec();
+
+    const userId = req.user._id;
+
+    // Get current user`s friends
+    const currentUser = await User.findById(userId);
+    const friends = currentUser.friends;
+
+    // Add current user`s ID to the friend array
+    friends.push(userId);
+
+    // Find posts from current user and their friends
+    const posts = await Post.find({ userId: { $in: friends } })
+      .sort({ date: -1 })
+      .populate("userId", "fullName")
       .populate("comments")
       .populate("likes")
-      .populate("likeCount")
       .exec();
 
     res.json({ message: "Success", posts });
