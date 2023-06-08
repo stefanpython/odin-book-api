@@ -2,15 +2,27 @@ const { body, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const User = require("../models/user");
 const Post = require("../models/post");
-const Like = require("../models/like");
-const Comment = require("../models/comment");
+const multer = require("multer");
+
+// Set up multer storage and filename for uploading images
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // Create post
 exports.post_create = [
   // Sanitize inputs
   body("content").trim().notEmpty().withMessage("Content is required"),
-  //   body("comments").isArray().withMessage("Comments must be an array"),
-  //   body("likes").isArray().withMessage("Likes must be an array"),
+
+  // Handle single file upload with filed name "image"
+  upload.single("image"),
 
   async (req, res) => {
     try {
@@ -29,6 +41,7 @@ exports.post_create = [
         content: content,
         userId: postAuthor,
         authorName: postAuthor.fullName,
+        image: req.file ? req.file.filename : null, // Add image
       });
 
       // Save new post to database
@@ -65,6 +78,7 @@ exports.post_list = async (req, res) => {
       .populate("userId", "fullName")
       .populate("comments")
       .populate("likes")
+      .populate("image")
       .exec();
 
     res.json({ message: "Success", posts });

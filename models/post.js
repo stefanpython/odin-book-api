@@ -9,6 +9,7 @@ const postSchema = new Schema({
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
   likeCount: { type: Number, default: 0 },
   date: { type: Date, default: Date.now() },
+  image: String,
 });
 
 module.exports = mongoose.model("Post", postSchema);
