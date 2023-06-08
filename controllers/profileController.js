@@ -4,6 +4,18 @@ const Comment = require("../models/comment");
 const Like = require("../models/like");
 const Post = require("../models/post");
 const bcrypt = require("bcryptjs");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // GET User profile
 exports.user_profile = async (req, res, next) => {
@@ -49,6 +61,8 @@ exports.profile_update = [
   body("email").trim().escape().isEmail(),
   body("password").trim().escape().isLength({ min: 3 }),
 
+  upload.single("image"),
+
   async (req, res) => {
     const userId = req.params.userId;
     const { firstName, lastName, email, password } = req.body;
@@ -60,10 +74,14 @@ exports.profile_update = [
         return res.status(400).json({ message: "Email already exists" });
       }
 
+      // Handle profile image
+      const profileImage = req.file ? req.file.filename : null;
+
       const updatedFields = {
         firstName: firstName,
         lastName: lastName,
         email: email,
+        profilePhoto: profileImage,
       };
 
       if (password) {

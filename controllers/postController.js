@@ -32,7 +32,7 @@ exports.post_create = [
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { content, comments, likes } = req.body;
+      const { content } = req.body;
 
       const postAuthor = await User.findById(req.user._id);
 

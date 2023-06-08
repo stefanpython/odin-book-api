@@ -14,6 +14,7 @@ const userSchema = new Schema({
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  profilePhoto: String,
 });
 
 userSchema.virtual("fullName").get(function () {
