@@ -50,14 +50,6 @@ exports.post_create = [
 // GET/Display all posts
 exports.post_list = async (req, res) => {
   try {
-    // const posts = await Post.find()
-    //   .populate("content")
-    //   .populate("authorName")
-    //   .populate("comments")
-    //   .populate("likes")
-    //   .populate("likeCount")
-    //   .exec();
-
     const userId = req.user._id;
 
     // Get current user`s friends

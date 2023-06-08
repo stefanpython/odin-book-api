@@ -72,5 +72,10 @@ router.post(
 
 // PROFILE ROUTE
 router.get("/profile/:userId", profile_controller.user_profile);
+router.put(
+  "/profile/:userId/update",
+  passport.authenticate("jwt", { session: false }),
+  profile_controller.profile_update
+);
 
 module.exports = router;

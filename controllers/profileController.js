@@ -1,9 +1,6 @@
 const { body, validationResult } = require("express-validator");
-const mongoose = require("mongoose");
 const User = require("../models/user");
-const Post = require("../models/post");
-const Like = require("../models/like");
-const Comment = require("../models/comment");
+const bcrypt = require("bcryptjs");
 
 // GET User profile
 exports.user_profile = async (req, res, next) => {
@@ -40,3 +37,47 @@ exports.user_profile = async (req, res, next) => {
     next(err);
   }
 };
+
+// Edit User Profile
+exports.profile_update = [
+  // Sanitize and validate inputs
+  body("firstName").trim().escape(),
+  body("lastName").trim().escape(),
+  body("email").trim().escape().isEmail(),
+  body("password").trim().escape().isLength({ min: 6 }),
+
+  async (req, res) => {
+    const userId = req.params.userId;
+    const { firstName, lastName, email, password } = req.body;
+
+    try {
+      // Check if email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser && existingUser._id.toString() !== userId) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+
+      const updatedFields = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      };
+
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        updatedFields.password = hashedPassword;
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: updatedFields },
+        { new: true }
+      );
+
+      res.json({ message: "Profile updated successfully!", updatedUser });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
+];
