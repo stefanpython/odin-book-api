@@ -1,5 +1,8 @@
 const { body, validationResult } = require("express-validator");
 const User = require("../models/user");
+const Comment = require("../models/comment");
+const Like = require("../models/like");
+const Post = require("../models/post");
 const bcrypt = require("bcryptjs");
 
 // GET User profile
@@ -44,7 +47,7 @@ exports.profile_update = [
   body("firstName").trim().escape(),
   body("lastName").trim().escape(),
   body("email").trim().escape().isEmail(),
-  body("password").trim().escape().isLength({ min: 6 }),
+  body("password").trim().escape().isLength({ min: 3 }),
 
   async (req, res) => {
     const userId = req.params.userId;
@@ -68,10 +71,29 @@ exports.profile_update = [
         updatedFields.password = hashedPassword;
       }
 
+      // Update user`s profile
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         { $set: updatedFields },
         { new: true }
+      );
+
+      // Update users`s info in posts
+      await Post.updateMany(
+        { userId: userId },
+        { $set: { authorName: updatedUser.fullName } }
+      );
+
+      // Update user`s info in comments
+      await Comment.updateMany(
+        { user: userId },
+        { $set: { authorName: updatedUser.fullName } }
+      );
+
+      // Update user`s info in likes
+      await Like.updateMany(
+        { user: userId },
+        { $set: { authorName: updatedUser.fullName } }
       );
 
       res.json({ message: "Profile updated successfully!", updatedUser });
