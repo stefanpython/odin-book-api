@@ -67,3 +67,26 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Create test user
+exports.test_user = async (req, res, next) => {
+  try {
+    const email = {
+      email: "test@user.com",
+    };
+
+    const user = await User.findOne(email);
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid test user" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, "acum", {
+      expiresIn: "1day",
+    });
+    res.json({ message: "Login successful", token });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};

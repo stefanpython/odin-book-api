@@ -20,6 +20,9 @@ router.get("/", (req, res, next) => {
 router.post("/sign-up", user_controller.signup);
 router.post("/login", user_controller.login);
 
+// TEST USER
+router.post("/test-user", user_controller.test_user);
+
 // FRIEND REQUEST ROUTES
 router.post(
   "/send-request",
