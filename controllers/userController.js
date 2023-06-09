@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { body } = require("express-validator");
+require("dotenv").config();
 
 // SignUp
 exports.signup = [
@@ -59,7 +60,7 @@ exports.login = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, "acum", {
+    const token = jwt.sign({ userId: user.id }, process.env.SECRET, {
       expiresIn: "1day",
     });
     res.json({ message: "Login successful", token });
@@ -81,7 +82,7 @@ exports.test_user = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid test user" });
     }
 
-    const token = jwt.sign({ userId: user.id }, "acum", {
+    const token = jwt.sign({ userId: user.id }, process.env.SECRET, {
       expiresIn: "1day",
     });
     res.json({ message: "Login successful", token });

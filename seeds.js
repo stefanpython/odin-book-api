@@ -1,5 +1,6 @@
 const { faker } = require("@faker-js/faker");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const User = require("./models/user");
 const Comment = require("./models/comment");
@@ -84,9 +85,7 @@ function generateFakeUser() {
 async function saveFakeUser(count) {
   try {
     // Connect to the database
-    await mongoose.connect(
-      "mongodb+srv://dementia1349:test@cluster0.zw0djkv.mongodb.net/odin_book?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.MONGODB_URI);
 
     for (let i = 0; i < count; i++) {
       // Generate fake user data

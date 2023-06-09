@@ -9,6 +9,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const User = require("./models/user");
+require("dotenv").config();
 
 // Passport Imports
 const passport = require("passport");
@@ -21,8 +22,7 @@ var apiRouter = require("./routes/api");
 
 // Connect to database
 async function main() {
-  const mongoURI =
-    "mongodb+srv://dementia1349:test@cluster0.zw0djkv.mongodb.net/odin_book?retryWrites=true&w=majority";
+  const mongoURI = process.env.MONGODB_URI;
   await mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -74,7 +74,7 @@ passport.use(
 passport.use(
   new JWTstrategy(
     {
-      secretOrKey: "acum",
+      secretOrKey: process.env.SECRET,
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     },
     async (token, done) => {
