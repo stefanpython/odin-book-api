@@ -13,7 +13,11 @@ exports.signup = [
   body("password").trim().escape().isLength({ min: 3 }),
 
   async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, confirmPassword } = req.body;
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
 
     try {
       // Check if email already exists
