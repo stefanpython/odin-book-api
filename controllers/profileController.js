@@ -22,31 +22,24 @@ exports.user_profile = async (req, res, next) => {
   try {
     const userId = req.params.userId;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId)
+      .populate({
+        path: "posts",
+        populate: {
+          path: "comments",
+          select: "-__v",
+        },
+        select: "-__v",
+      })
+      .populate("friendRequests", "-__v")
+      .populate("likes", "-__v")
+      .populate("friends", "-__v");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const populateFields = [
-      "posts",
-      "friendRequests",
-      "comments",
-      "likes",
-      "friends",
-    ];
-
-    const populatedUser = await Promise.all(
-      populateFields.map(async (field) => {
-        const populatedField = await User.populate(user, {
-          path: field,
-          select: "-__v",
-        });
-        return populatedField;
-      })
-    );
-
-    res.json({ message: "Success", user: populatedUser[0] });
+    res.json({ message: "Success", user });
   } catch (err) {
     console.log(err);
     next(err);
