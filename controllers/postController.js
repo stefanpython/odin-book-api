@@ -16,22 +16,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Create post
 exports.post_create = [
-  // Sanitize inputs
-  body("content").trim().notEmpty().withMessage("Content is required"),
-
-  // Handle single file upload with filed name "image"
-  upload.single("image"),
-
+  // Handle single file upload with field name "image"
+  (req, res, next) => {
+    const uploadMiddleware = upload.single("image");
+    uploadMiddleware(req, res, (err) => {
+      if (err) {
+        console.error("Error uploading file:", err);
+        return res.status(400).json({ error: err.message });
+      }
+      console.log("File uploaded successfully");
+      next();
+    });
+  },
   async (req, res) => {
     try {
-      // Check for validation errors
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const { content } = req.body;
 
       const postAuthor = await User.findById(req.user._id);
@@ -51,8 +50,10 @@ exports.post_create = [
       postAuthor.posts.push(savedPost._id);
       await postAuthor.save();
 
+      console.log("Post created successfully");
       res.status(200).json({ message: "Post created successfully", savedPost });
     } catch (err) {
+      console.error("Error creating post:", err);
       res
         .status(500)
         .json({ message: "Error in creating post", error: err.message });

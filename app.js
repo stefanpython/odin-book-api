@@ -44,12 +44,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Define the '/images' route
+app.get("/images/:imageName", (req, res) => {
+  const imageName = req.params.imageName;
+  const imagePath = path.join(__dirname, "public/images", imageName);
+
+  res.sendFile(imagePath);
+});
+
 // Define passport login strategy
 passport.use(
   "login",
   {
-    usernameFiled: "email",
-    passwordFiled: "password",
+    usernameField: "email",
+    passwordField: "password",
   },
   new LocalStrategy(async (email, password, done) => {
     try {
