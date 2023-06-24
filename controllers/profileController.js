@@ -33,7 +33,8 @@ exports.user_profile = async (req, res, next) => {
       })
       .populate("friendRequests", "-__v")
       .populate("likes", "-__v")
-      .populate("friends", "-__v");
+      .populate("friends", "-__v")
+      .populate("profileImg", "-__v");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -48,13 +49,17 @@ exports.user_profile = async (req, res, next) => {
 
 // Edit User Profile
 exports.profile_update = [
-  // Sanitize and validate inputs
-  body("firstName").trim().escape(),
-  body("lastName").trim().escape(),
-  body("email").trim().escape().isEmail(),
-  body("password").trim().escape().isLength({ min: 3 }),
-
-  upload.single("image"),
+  (req, res, next) => {
+    const uploadMiddleware = upload.single("image");
+    uploadMiddleware(req, res, (err) => {
+      if (err) {
+        console.error("Error uploading file:", err);
+        return res.status(400).json({ error: err.message });
+      }
+      console.log("File uploaded successfully");
+      next();
+    });
+  },
 
   async (req, res) => {
     const userId = req.params.userId;
@@ -92,7 +97,12 @@ exports.profile_update = [
       // Update users`s info in posts
       await Post.updateMany(
         { userId: userId },
-        { $set: { authorName: updatedUser.fullName } }
+        {
+          $set: {
+            authorName: updatedUser.fullName,
+            profilePhoto: updatedUser.profilePhoto,
+          },
+        }
       );
 
       // Update user`s info in comments
@@ -110,7 +120,7 @@ exports.profile_update = [
       res.json({ message: "Profile updated successfully!", updatedUser });
     } catch (err) {
       console.log(err);
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).json({ message: "Error updating profile", error: err });
     }
   },
 ];
