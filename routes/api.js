@@ -19,6 +19,7 @@ router.get("/", (req, res, next) => {
 // USER ROUTES
 router.post("/sign-up", user_controller.signup);
 router.post("/login", user_controller.login);
+router.get("/users", user_controller.user_list);
 
 // TEST USER
 router.post("/test-user", user_controller.test_user);
