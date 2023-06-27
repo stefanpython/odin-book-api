@@ -100,6 +100,37 @@ exports.accept_request = async (req, res) => {
   }
 };
 
+// Decline friend request
+exports.decline_request = async (req, res) => {
+  try {
+    const { friendRequestId } = req.body;
+
+    const request = await FriendRequest.findById(friendRequestId);
+    if (!request) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+
+    const sender = await User.findById(request.sender);
+    const recipient = await User.findById(request.recipient);
+
+    if (!sender || !recipient) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    sender.friendRequests.pull(friendRequestId);
+    recipient.friendRequests.pull(friendRequestId);
+
+    await sender.save();
+    await recipient.save();
+
+    await FriendRequest.findByIdAndDelete(friendRequestId);
+
+    res.status(200).json({ message: "Friend request declined" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Get friend request list
 exports.request_list = async (req, res) => {
   const { userId } = req.params;

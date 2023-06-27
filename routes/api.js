@@ -30,6 +30,13 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   friendRequest_controller.send_request
 );
+
+router.post(
+  "/decline-request",
+  passport.authenticate("jwt", { session: false }),
+  friendRequest_controller.decline_request
+);
+
 router.post(
   "/accept-request",
   passport.authenticate("jwt", { session: false }),
