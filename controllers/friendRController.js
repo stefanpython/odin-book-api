@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const FriendRequest = require("../models/friendRequest");
+const friendRequest = require("../models/friendRequest");
 
 // Send friend request
 exports.send_request = async (req, res) => {
@@ -41,7 +42,7 @@ exports.send_request = async (req, res) => {
       sender: senderId,
       recipient: recipientId,
       senderName: senderName.fullName,
-      recipientName: recipient.fullName,
+      recipientName: recipientName.fullName,
     });
 
     // Add request to the recipient`s friendRequests array
@@ -105,6 +106,7 @@ exports.request_list = async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+    const friendRequest = await FriendRequest.find({ recipient: userId });
 
     if (!user) {
       return res.status(404).json({ message: "USer not found" });
@@ -112,9 +114,11 @@ exports.request_list = async (req, res) => {
 
     const requestList = user.friendRequests;
 
-    res
-      .status(200)
-      .json({ message: "Request list successfully retreived", requestList });
+    res.status(200).json({
+      message: "Request list successfully retreived",
+      requestList,
+      friendRequest,
+    });
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
   }
