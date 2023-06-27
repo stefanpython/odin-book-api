@@ -40,7 +40,8 @@ exports.post_create = [
         content: content,
         userId: postAuthor,
         authorName: postAuthor.fullName,
-        image: req.file ? req.file.filename : null, // Add image
+        image: req.file ? req.file.filename : null,
+        profilePhoto: postAuthor.profilePhoto,
       });
 
       // Save new post to database
