@@ -7,10 +7,6 @@ const post_controller = require("../controllers/postController");
 const like_controller = require("../controllers/likeController");
 const comment_controller = require("../controllers/commentController");
 const profile_controller = require("../controllers/profileController");
-const User = require("../models/user");
-const Post = require("../models/post");
-const Like = require("../models/like");
-const Comment = require("../models/comment");
 
 router.get("/", (req, res, next) => {
   res.redirect("/posts");
