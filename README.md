@@ -51,4 +51,5 @@ To get started with the Odinbook backend app, follow these steps:
 ### User Profile
 * GET /profile/:userId: Get a user's profile information
 * PUT /profile/:userId/update: Update a user's profile (requires authentication)
+
 Refer to the API documentation or code comments for more details on the request/response formats and required authentication.
