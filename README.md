@@ -1,4 +1,3 @@
-# odin-book-api
 
 # Odinbook Backend App
 Odinbook is a social media platform backend application that provides the necessary server-side functionality to handle user authentication, manage posts, handle friend requests, and more.
