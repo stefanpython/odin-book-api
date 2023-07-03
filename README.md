@@ -2,6 +2,8 @@
 # Odinbook Backend App
 Odinbook is a social media platform backend application that provides the necessary server-side functionality to handle user authentication, manage posts, handle friend requests, and more.
 
+Live [Here](https://stefanpython.github.io/odin-book-react/)
+
 ### Features
 * User registration and login with JWT authentication
 * Friend request management
